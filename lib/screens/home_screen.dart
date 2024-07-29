@@ -14,12 +14,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchCategories();
+    _fetchSpecificCategories();
   }
 
-  void _fetchCategories() async {
+  void _fetchSpecificCategories() async {
     try {
-      final categories = await ApiService.fetchCategories(query: _searchQuery);
+      final categories = await ApiService.fetchSpecificCategories();
       setState(() {
         _categories = categories;
       });
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _searchQuery = query;
     });
-    _fetchCategories();
+    _fetchSpecificCategories();
   }
 
   @override

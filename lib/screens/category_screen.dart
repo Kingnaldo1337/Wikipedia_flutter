@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/api_service.dart';
+import 'article_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String category;
@@ -50,6 +51,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     ),
                     child: ListTile(
                       title: Text(_articles[index]),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArticleScreen(
+                              articleTitle: _articles[index],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 );

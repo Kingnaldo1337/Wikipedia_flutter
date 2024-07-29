@@ -4,24 +4,9 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String _baseUrl = 'https://en.wikipedia.org/w/api.php';
 
-  static Future<List<String>> fetchCategories({String query = ''}) async {
-    final url = '$_baseUrl?action=query&list=allcategories&acprefix=$query&aclimit=10&format=json';
-    print('Fetching categories from: $url');
-    
-    final response = await http.get(Uri.parse(url));
-
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      List<String> categories = (data['query']['allcategories'] as List)
-          .map((category) => category['*'] as String)
-          .toList();
-      return categories;
-    } else {
-      throw Exception('Failed to load categories');
-    }
+  static Future<List<String>> fetchSpecificCategories() async {
+    List<String> specificCategories = ['History', 'Music', 'News', 'Health', 'Technology'];
+    return specificCategories;
   }
 
   static Future<List<String>> fetchArticlesByCategory(String category) async {
@@ -41,6 +26,26 @@ class ApiService {
       return articles;
     } else {
       throw Exception('Failed to load articles');
+    }
+  }
+
+  static Future<String> fetchArticleContent(String title) async {
+    final url = '$_baseUrl?action=query&prop=extracts&exintro&titles=$title&format=json';
+    print('Fetching content for article $title from: $url');
+    
+    final response = await http.get(Uri.parse(url));
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final pages = data['query']['pages'];
+      final page = pages.values.first;
+      final extract = page['extract'];
+      return extract ?? 'No content available';
+    } else {
+      throw Exception('Failed to load article content');
     }
   }
 }
