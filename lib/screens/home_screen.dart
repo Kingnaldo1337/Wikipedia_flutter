@@ -40,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Wikipedia Categories'),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Column(
         children: [
@@ -48,30 +50,50 @@ class _HomeScreenState extends State<HomeScreen> {
             child: TextField(
               decoration: InputDecoration(
                 labelText: 'Search Categories',
-                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
               ),
               onChanged: _onSearchChanged,
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_categories[index]),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CategoryScreen(
-                          category: _categories[index],
+            child: _categories.isNotEmpty
+                ? ListView.builder(
+                    itemCount: _categories.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Card(
+                          elevation: 4.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ListTile(
+                            title: Text(_categories[index]),
+                            trailing: Icon(Icons.arrow_forward),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryScreen(
+                                    category: _categories[index],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                      );
+                    },
+                  )
+                : Center(
+                    child: Text(
+                      'No categories found',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
           ),
         ],
       ),
