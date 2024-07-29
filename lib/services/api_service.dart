@@ -4,11 +4,10 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String _baseUrl = 'https://en.wikipedia.org/w/api.php';
 
-  static Future<List<String>> fetchCategories() async {
-    final url =
-        '$_baseUrl?action=query&list=allcategories&aclimit=10&format=json';
+  static Future<List<String>> fetchCategories({String query = ''}) async {
+    final url = '$_baseUrl?action=query&list=allcategories&acprefix=$query&aclimit=10&format=json';
     print('Fetching categories from: $url');
-
+    
     final response = await http.get(Uri.parse(url));
 
     print('Response status: ${response.statusCode}');
@@ -26,10 +25,9 @@ class ApiService {
   }
 
   static Future<List<String>> fetchArticlesByCategory(String category) async {
-    final url =
-        '$_baseUrl?action=query&list=categorymembers&cmtitle=Category:$category&cmlimit=10&format=json';
+    final url = '$_baseUrl?action=query&list=categorymembers&cmtitle=Category:$category&cmlimit=10&format=json';
     print('Fetching articles for category $category from: $url');
-
+    
     final response = await http.get(Uri.parse(url));
 
     print('Response status: ${response.statusCode}');

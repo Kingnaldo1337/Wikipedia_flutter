@@ -8,12 +8,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<List<String>>? _categories;
+  List<String> _categories = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _categories = ApiService.fetchCategories();
+    _fetchCategories();
+  }
+
+  void _fetchCategories() async {
+    try {
+      final categories = await ApiService.fetchCategories(query: _searchQuery);
+      setState(() {
+        _categories = categories;
+      });
+    } catch (e) {
+      print('Failed to load categories: $e');
+    }
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+    _fetchCategories();
   }
 
   @override
@@ -22,35 +41,39 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Wikipedia Categories'),
       ),
-      body: FutureBuilder<List<String>>(
-        future: _categories,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No categories found.'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Search Categories',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: _onSearchChanged,
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _categories.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(snapshot.data![index]),
+                  title: Text(_categories[index]),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            CategoryScreen(category: snapshot.data![index]),
+                        builder: (context) => CategoryScreen(
+                          category: _categories[index],
+                        ),
                       ),
                     );
                   },
                 );
               },
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
